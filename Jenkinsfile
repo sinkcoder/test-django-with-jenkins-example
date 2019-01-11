@@ -14,15 +14,5 @@ pipeline {
                 sh 'python manage.py test'
             }
         }
-        stage('Deliver') {
-            steps {
-                sh 'pyinstaller --onefile sources/add2vals.py'
-                sh 'dist/add2vals 1 2'
-            }
-        post {
-            unstable {
-                archiveArtifacts 'dist/add2vals'
-            }
-        }
     }
 }
