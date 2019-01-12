@@ -52,9 +52,9 @@ class HomeTest(StaticLiveServerTestCase):
         )
 
     def test_can_reach_home(self):
-        self.browser.get('http://127.0.0.1:8000')
+        self.browser.get(self.live_server_url)
         self.assertIn('Welcome to Django', self.browser.title)
 
     def test_fake_fail(self):
-        self.browser.get('http://127.0.0.1:8000')
+        self.browser.get(self.live_server_url)
         self.fail('Failed.')
