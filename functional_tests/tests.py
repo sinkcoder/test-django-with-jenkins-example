@@ -7,6 +7,8 @@ from django.test import TestCase
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+import requests
+import time
 # Create your tests here.
 
 SCREEN_DUMP_LOCATION = os.path.join(
@@ -15,11 +17,19 @@ SCREEN_DUMP_LOCATION = os.path.join(
 
 class HomeTest(StaticLiveServerTestCase):
 
-    def setUp(self):
-        self.options = Options()
-        self.options.add_argument('--headless')
-        self.options.add_argument('--no-sandbox')
-        self.browser = webdriver.Chrome(chrome_options=self.options)
+    @classmethod
+    def setUpClass(cls):
+        super(HomeTest, cls).setUpClass()
+        cls.options = Options()
+        cls.options.add_argument('--headless')
+        cls.options.add_argument('--no-sandbox')
+        cls.browser = webdriver.Chrome(chrome_options=cls.options)
+        cls.browser.implicitly_wait(10)
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.browser.quit()
+        super(HomeTest, cls).tearDownClass()
 
     def tearDown(self):
         if self._test_has_failed():
@@ -29,8 +39,7 @@ class HomeTest(StaticLiveServerTestCase):
                 self._windowid = ix
                 self.browser.switch_to_window(handle)
                 self.take_screenshot()
-        self.browser.quit()
-        super(StaticLiveServerTestCase, self).tearDown()
+        super(HomeTest, self).tearDown()
 
     def _test_has_failed(self):
         # slightly obscure but couldn't find a better way!
@@ -52,9 +61,9 @@ class HomeTest(StaticLiveServerTestCase):
         )
 
     def test_can_reach_home(self):
-        self.browser.get(self.live_server_url)
-        self.assertIn('Welcome to Django', self.browser.title)
+        self.browser.get(self.live_server_url + '/admin')
+        self.assertIn('Log in', self.browser.title)
 
     def test_fake_fail(self):
-        self.browser.get(self.live_server_url)
+        self.browser.get(self.live_server_url + '/admin')
         self.fail('Failed.')
